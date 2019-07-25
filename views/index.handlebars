@@ -1,21 +1,30 @@
-<h1>Website Scraper</h1>
+<h1>Events at Berkeley</h1>
+<h3>Campus & Community</h3>
 
-<div class="container">
+<div class="container-fluid">
 
     <div class="row">
+        <div class="col-md-10 col-sm-10 col-xs-12 offset-md-1 offset-sm-1" id="main-section">
 
-        <div class="col-md-4 col-sm-4 col-xs-4">
+           {{#each articles}}
+                <div class="row">
+                    <div class="col-md-3 col-sm-3 col-xs-1">
+                        <img src="{{this.photo}}" id="photo{{this.id}}" style="width:100%">
+                    </div>
+                    <div class="col-md-7 col-sm-7 col-xs-10">
+                        <h4 id="title{{this.id}}">{{this.title}}</h4>
+                        <h5 id="summary{{this.id}}">{{this.summary}}</h5>
+                        <a id="link{{this.id}}" href="{{this.link}}" target="_blank"><p>View Source</p></a>
+                    </div>
+                    <div class="col-md-2 col-sm-2 col-xs-1">
+                        <button class="submitBtn btn btn-danger" id="{{this.id}}" class="btn btn-danger" style="width:100%">Save Article</button><br><br>
+                        <button class="btn btn-success" style="width:100%">Add Note</button>
+                    </div>
+                </div>
+                <hr>
+           {{/each}}
 
         </div>
-
-        <div class="col-md-4 col-sm-4 col-xs-4">
-           
-        </div>
-
-        <div class="col-md-4 col-sm-4 col-xs-4">
-
-        </div>
-
     </div>
 
 </div>

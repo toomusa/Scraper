@@ -1,0 +1,12 @@
+#main-section {
+    background-color: blue;
+}
+
+h1, h3 {
+    text-align: center;
+}
+
+#savedBtn {
+    background-color: gray;
+    border: none;
+}
