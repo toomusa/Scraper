@@ -7,5 +7,7 @@ router.route("/saved").get(models.showArticles);
 router.route("/scrape").get(models.scrapeArticles);
 
 router.route("/save").post(models.saveArticle);
+router.route("/addnote").post(models.addNote);
+router.route("/checknote").post(models.checkNote);
 
 module.exports = router;

@@ -20,7 +20,7 @@ const ArticleSchema = new Schema({
     required: true 
   },
   domId: {
-    type: Number,
+    type: String,
     required: true
   },
   note: {
