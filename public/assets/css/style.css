@@ -1,9 +1,38 @@
-#main-section {
-    background-color: blue;
+body {
+    background-color: midnightblue;
+}
+
+#article-block {
+    background-color: ghostwhite;
+    box-shadow: 0 2px 8px 0 darkorange, 0 2px 10px 0 darkorange;
+}
+
+#mod-header {
+    background-color: #28a745;
+}
+
+#mod-content {
+    background-color: ghostwhite;
+}
+
+#mod-body {
+    background-color: ghostwhite;
+    margin: 20px;
 }
 
 h1, h3 {
     text-align: center;
+    color: darkorange;
+    font-weight: bolder;
+    text-shadow: -0.5px 0 ghostwhite, 0 0.5px ghostwhite, 0.5px 0 ghostwhite, 0 -0.5px ghostwhite;
+    letter-spacing: 2px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    margin-top: 10px;
+}
+
+h2 {
+    text-align: center;
+    color: ghostwhite;
 }
 
 .savedBtn {
@@ -12,8 +41,53 @@ h1, h3 {
 }
 
 .text-area {
-    width: 80%;
-    min-height: 150px;
-    max-height: 150px;
+    width: 100%;
+    min-height: 100px;
+    max-height: 100px;
     overflow-y: auto;
+    margin-top: 10px;
 }
+
+.title-area {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.caption {
+    font-weight: bolder;
+    color: #28a745;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.notice {
+    text-align: center;
+}
+
+#navbardiv {
+    background-color: darkorange;
+}
+
+.navbar-custom {
+    background-color: darkorange;
+    box-shadow: 0px 0px 7px 0 ghostwhite, 0px 0px 7px 0 ghostwhite;
+}
+.navbar-custom .navbar-brand,
+.navbar-custom .navbar-text {
+    color: midnightblue;
+    font-weight: bolder;
+}
+.navbar-custom .navbar-nav .nav-link {
+    color: midnightblue;
+    font-weight: bolder;
+}
+.navbar-custom .nav-item.active .nav-link,
+.navbar-custom .nav-item:hover .nav-link {
+    color: firebrick;
+    font-weight: bolder;
+    text-decoration: underline;
+} 
+
+.navbar-xs { min-height:50px; height: 50px;}
+.navbar-xs .navbar-brand{ padding: 0px 12px;font-size: 16px;line-height: 28px; }
+.navbar-xs .navbar-nav > li > a {  padding-top: 0px; padding-bottom: 0px; line-height: 28px; }

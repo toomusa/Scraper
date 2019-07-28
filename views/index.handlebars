@@ -7,18 +7,32 @@
         <div class="col-md-10 col-sm-10 col-xs-12 offset-md-1 offset-sm-1" id="main-section">
 
            {{#each articles}}
-                <div class="row">
-                    <div class="col-md-3 col-sm-3 col-xs-1">
-                        <img src="{{this.photo}}" id="photo{{this.domId}}" style="width:100%">
+                <div class="row border border-secondary rounded active mb-0" id="article-block">
+                    <div class="col-md-3 col-sm-2 col-xs-1" style="text-align: center">
+                        <img src="{{this.photo}}" id="photo{{this._id}}" style="width:100%">
+                        <a id="link{{this._id}}" href="{{this.link}}" target="_blank" class="link">View Source</a>
                     </div>
                     <div class="col-md-7 col-sm-7 col-xs-10">
-                        <h4 id="title{{this.domId}}">{{this.title}}</h4>
-                        <h5 id="summary{{this.domId}}">{{this.summary}}</h5>
-                        <a id="link{{this.domId}}" href="{{this.link}}" target="_blank"><p>View Source</p></a>
+                        <h4 id="title{{this._id}}">{{this.title}}</h4>
+                        <h5 id="summary{{this._id}}" class="lead">{{this.summary}}</h5>
                     </div>
-                    <div class="col-md-2 col-sm-2 col-xs-1">
-                        <button class="submitBtn btn btn-danger" id="submit{{this.domId}}" class="btn btn-danger" style="width:100%">Save Article</button><br><br>
-                        <button class="noteBtn btn btn-success" id="note{{this.domId}}" style="width:100%">Add Note</button>
+                    <div class="col-md-2 col-sm-3 col-xs-1">
+                        <br>
+                        {{#if this.saved}}
+                            <button class="submitBtn btn btn-danger" id="submit{{this._id}}" class="btn btn-danger" style="width:100%">Remove</button><br><br>
+                        {{else}}
+                            <button class="submitBtn btn btn-danger" id="submit{{this._id}}" class="btn btn-danger" style="width:100%">Save Article</button><br><br>
+                        {{/if}}
+
+                        {{#if this.note._id}}
+                            <button class="noteBtn btn btn-success" id="note{{this._id}}" style="width:100%">View Note</button>
+                        {{else}}
+                            {{#if this.saved}}
+                                <button class="noteBtn btn btn-success" id="note{{this._id}}" style="width:100%">Add Note</button>
+                            {{else}}
+                                <button class="noteBtn btn btn-success" id="note{{this._id}}" style="width:100%" disabled>Add Note</button>
+                            {{/if}}
+                        {{/if}}
                     </div>
                 </div>
                 <hr>
@@ -28,3 +42,5 @@
     </div>
 
 </div>
+
+ 

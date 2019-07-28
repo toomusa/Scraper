@@ -8,97 +8,92 @@ mongoose.connect("mongodb://localhost/scraper", { useNewUrlParser: true });
 mongoose.set('useFindAndModify', false);
 
 const models = {
-    homePage: (req, res) => {
-        res.render("index")
-    },
-    savedArticles: (req, res) => {
-        res.render("saved")
-    },
-    showArticles: async (req, res) => {
+    homePage: async (req, res) => {
         try {
-            let articles = await Article.find();
+            let articles = await Article.find().populate("note");
             res.render("index", {articles})
         } catch(e) {
             console.log(e)
         }
     },
-    scrapeArticles: (req, res) => {
-
+    savedArticles: async (req, res) => {
+        try {
+            let articles = await Article.find({saved: true});
+            res.render("index", {articles})
+        } catch(e) {
+            console.log(e)
+        }
+    },
+    scrapeArticles: async (req, res) => {
         let articles = [];
 
-        axios.get("https://news.berkeley.edu/category/campuscommunity/events_at_berkeley/").then(function(response) {
-            
-            let $ = cheerio.load(response.data)
-            let idMaker = 1;
-        
-            $("article").each(function(index, element) {
-
-                let result = {};
-
-                result.title = $(this).find("h3").text().replace("\n", " ").trim();
-                result.summary = $(this).find("img").attr("alt");
-                result.photo = $(this).find("img").attr("src");
-                result.link = $(this).find("a").attr("href");
-                result.domId = idMaker;
-
-                articles.push(result)
-                idMaker++;
-            })
-        }).then(() => {
-            res.render("index", {articles})
-        }).catch(e => console.log(e))
-    },
-    saveArticle: (req, res) => {
-
-        let result = {};
-
-        result.title = req.body.title;
-        result.summary = req.body.summary;
-        result.photo = req.body.photo;
-        result.link = req.body.link;
-        result.domId = req.body.domId;
-        
-        Article.create(result)
-            .then(dbArticle => console.log("yes"))
-            .catch(err => console.log(err))
+        let scrapedContent = await axios.get("https://news.berkeley.edu/category/campuscommunity/events_at_berkeley/")
+        let $ = cheerio.load(scrapedContent.data)
     
-        res.send(result.domId);
+        $("article").each( (index, element) => {
+            let result = {};
+            result.title = $(element).find("h3").text().replace("\n", " ").trim();
+            result.summary = $(element).find("img").attr("alt");
+            result.photo = $(element).find("img").attr("src");
+            result.link = $(element).find("a").attr("href");
+            result.saved = false;
+            articles.push(result)
+        })
+
+        const merge = (a, b, p) => a.filter( aa => ! b.find ( bb => aa[p] === bb[p]) ).concat(b);
+        let articlesInDb = await Article.find();
+        let articlesToUpdate = merge(articles, articlesInDb, "saved");
+        
+        let updatedArticles = await Article.updateMany(articlesToUpdate);
+        let savedArticles = await Article.find();
+        if (savedArticles.length === articlesToUpdate.length) {
+                res.redirect("/");
+            }
+
+        // Use to set up DB after dropping collection
+            // let writtenArticles = await Article.insertMany(articles)
+            // if (writtenArticles.length === articles.length) {
+            //     res.redirect("/");
+            // }
+    },
+    saveArticle: async (req, res) => {
+        let { _id } = req.body;
+        let savedArticle = await Article.findByIdAndUpdate(_id, {saved: true});
+        res.send(savedArticle);
+    },
+    removeArticle: async (req, res) => {
+        let { _id } = req.body
+        let articleToRemove = await Article.findByIdAndUpdate(_id, {saved: false});
+         
+        if (articleToRemove.note && articleToRemove.note._id) {
+            let noteId = articleToRemove.note._id;
+            let removedNote = await Note.findByIdAndRemove(noteId);
+        }
+
+        let removedArticle = await Article.findById(_id);
+        res.send(removedArticle);
     },
     addNote: async (req, res) => {
-
-        // let result = {};
-        // result.title = req.body.title;
-        // result.summary = req.body.summary;
-        // result.photo = req.body.photo;
-        // result.link = req.body.link;
-        // result.domId = req.body.domId;
-        
+        let _id = req.body._id;
+        let noteId = req.body.noteId;
         let note = {};
-        let articleTitle = req.body.title;
-        
         note.title = req.body.noteTitle;
-        note.body = req.body.note;
-        note.domId = req.body.domId;
+        note.body = req.body.noteBody;
 
-        let newNote = await Note.create(note);
-        await Article.findOneAndUpdate({title: articleTitle}, {$push: {note: newNote._id}}, {new: true})
-        res.send(note.domId);
+        if (noteId === "") {
+            let newNote = await Note.create(note);
+            let articleWithNote = await Article.findByIdAndUpdate(_id, {$push: {note: newNote._id}}, {new: true})
+            res.send(articleWithNote);
+        } else {
+            let updateNote = await Note.replaceOne({_id: noteId}, note, {upsert: true});
+            let articleWithNote = await Article.findById(_id).populate("note")
+            res.send(articleWithNote);
+        }
     },
     checkNote: async (req, res) => {
-        console.log(req.body)
-        let articlePhoto = req.body.photo;
-        let articleTitle = req.body.title;
-        let noteId = req.body.noteId;
-        console.log("ARTICLE TITLE: " + articleTitle)
-
-        // let dbArticle = await Article.findOne({photo: articlePhoto})
-        // console.log(dbArticle)
-        // res.send(dbArticle);
-
-        let dbArticle = await Article.findOne({ photo: articlePhoto }).populate("note")
-        console.log(dbArticle)
-        res.send(dbArticle);
-
+        let _id = req.body._id;
+        let savedNote = await Article.findById(_id).populate("note")
+        res.send(savedNote);
     }
 };
 

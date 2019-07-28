@@ -12,33 +12,57 @@
     <title>Scraper</title>
 </head>
 <body>
+
+    <nav class="navbar navbar-custom navbar-expand-sm navbar-xs sticky-top navbar-dark" id="navbardiv">
+        <a class="navbar-brand" href="/">WebScraper</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/saved">Saved Articles</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/scrape">See What's New</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
     <div class="main-content">
 
         {{{body}}}  
     
     </div>
 
-       <!-- Modal -->
-    <div id="note-modal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
+      <!-- Modal -->
+    <div id="note-modal" class="modal fade" role="dialog" data-id="temp" note-id="temp">
+        <div class="modal-dialog modal-notify modal-success success">
+            <div class="modal-content" id="mod-content">
+                <div class="modal-header" id="mod-header">
                     <h2 class="modal-title"><strong>Add a Note</strong></h2>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" id="mod-body">
                     <div class="container">
                         <div class="row">
                             <div class="col-xs-12 col-sm-12 col-md-12" id="modality">
-                                <input type="text" id="noteTitle" placeholder="Add a Title">
+                                <span class="caption">Title:</span><br>
+                                <input type="text" id="noteTitle" placeholder="Add a Title" class="title-area"><br><br>
+                                <span class="caption">Note:</span><br>
                                 <textarea type="text" id="note" placeholder="Add your Note" class="text-area"></textarea>
-                                <button type="submit" id="noteSubmit" data-dismiss="modal">Add</button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" id="noteSubmit" data-dismiss="modal" class="btn btn-primary">Add Note</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>

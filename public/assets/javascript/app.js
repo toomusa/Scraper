@@ -1,73 +1,82 @@
 
-console.log("App.js is connected")
-
 $(document).on("click", ".submitBtn", function(){
 
-    let domId = $(this).attr("id").substring(6);
-    let title = $(`#title${domId}`).text();
-    let summary = $(`#summary${domId}`).text();
-    let photo = $(`#photo${domId}`).attr("src");
-    let link = $(`#link${domId}`).attr("href");
+    let _id = $(this).attr("id").substring(6);
+    let title = $(`#title${_id}`).text();
+    let summary = $(`#summary${_id}`).text();
+    let photo = $(`#photo${_id}`).attr("src");
+    let link = $(`#link${_id}`).attr("href");
 
-    let result = {title, summary, photo, link, domId};
+    let result = {title, summary, photo, link, _id};
 
-    $.post("/save", result, function(id){
-        console.log("Article Saved");
-        $(`#submit${id}`).text("Saved").addClass("savedBtn");
-    })
-
+    if ($(this).text() === "Save Article") {
+        $.post("/save", result, function(result){
+            console.log("Article Saved");
+            $(`#note${result._id}`).attr("disabled", false);
+            $(`#submit${result._id}`).text("Remove");
+        })
+    } else if ($(this).text() === "Remove") {
+        $.post("/remove", result, function(result){
+            console.log("Article Removed");
+            $(`#note${result._id}`).text("Add Note").attr("disabled", true);
+            $(`#submit${result._id}`).text("Save Article");
+        })
+    }
 })
 
-let noteId = 0;
 
 $(document).on("click", ".noteBtn", function(){
     
-    noteId = 0;
-    noteId = $(this).attr("id").substring(4);
-    let title = $(`#title${noteId}`).text();
-    let summary = $(`#summary${noteId}`).text();
-    let photo = $(`#photo${noteId}`).attr("src");
-    let link = $(`#link${noteId}`).attr("href");
+    let _id = $(this).attr("id").substring(4);
+    let title = $(`#title${_id}`).text();
+    let summary = $(`#summary${_id}`).text();
+    let photo = $(`#photo${_id}`).attr("src");
+    let link = $(`#link${_id}`).attr("href");
 
-    let result = {title, summary, photo, link, noteId};
-    console.log(result)
+    let result = {title, summary, photo, link, _id};
+    $("#note-modal").attr("data-id", `modal${_id}`)
 
     $.post("/checknote", result, (savedNote) => {
-        console.log(savedNote.note)
-        if (savedNote) {
-            let noteTitle = savedNote.note.title; 
-            let note = savedNote.note.body;
+        if (savedNote.note) {
+            let noteTitle = (savedNote.note.title) ? savedNote.note.title : ""; 
+            let noteBody = (savedNote.note.body) ? savedNote.note.body : "";
+            let noteId = savedNote.note._id;
             $("#noteTitle").val(noteTitle);
-            $("#note").val(note);
+            $("#note").val(noteBody);
+            $("#note-modal").attr("note-id", `note${noteId}`)
         }
+        $("#note-modal").modal("toggle");
     })
-    
-    $("#note-modal").modal("toggle");
 })
 
 
 $("#note-modal").on("click", "#noteSubmit", () => {
 
-    let domId = noteId;
-    let title = $(`#title${domId}`).text();
-    let summary = $(`#summary${domId}`).text();
-    let photo = $(`#photo${domId}`).attr("src");
-    let link = $(`#link${domId}`).attr("href");
+    let _id = $("#note-modal").attr("data-id").substring(5);
+    let title = $(`#title${_id}`).text();
+    let summary = $(`#summary${_id}`).text();
+    let photo = $(`#photo${_id}`).attr("src");
+    let link = $(`#link${_id}`).attr("href");
 
+    let noteId = $("#note-modal").attr("note-id").substring(4);
     let noteTitle = $("#noteTitle").val();
-    let note = $("#note").val();
-
-    console.log(noteTitle)
-    console.log(note)
+    let noteBody = $("#note").val();
 
     $("#noteTitle").val("");
     $("#note").val("");
     
-    let result = {title, summary, photo, link, domId, noteTitle, note};
+    let result = {_id, title, summary, photo, link, noteId, noteTitle, noteBody};
     
-    $.post("/addnote", result, function(id) {
-        console.log("Note Added");
-        console.log(id);
-        $(`#note${id}`).text("Added").addClass("savedBtn");
+    $.post("/addnote", result, function(articleWithNote) {
+        console.log("Added Note");
+        let _id = articleWithNote._id;
+        $(`#note${_id}`).text("View Note");
     })
+})
+
+
+$("#note-modal").on("hidden.bs.modal", () => {
+    $("#note-modal").attr("note-id", `temp`)
+    $("#noteTitle").val("");
+    $("#note").val("");
 })
