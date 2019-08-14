@@ -23,10 +23,20 @@ const ArticleSchema = new Schema({
     type: Boolean,
     default: false
   },
-  note: {
+  note: [{
     type: Schema.Types.ObjectId,
-    ref: "Note"
+    ref: "Note",
+    properties: {
+      admin: {
+          type: Boolean,
+          default: false
+      },
+      muted: {
+          type: Boolean,
+          default: false
+      },
   }
+  }]
 });
 
 const Article = mongoose.model("articles", ArticleSchema);

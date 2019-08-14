@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const axios = require("axios");
 const cheerio = require("cheerio");
 
-mongoose.connect("mongodb://localhost/scraper", { useNewUrlParser: true });
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/scraper", { useNewUrlParser: true });
 mongoose.set('useFindAndModify', false);
 
 const models = {
@@ -18,7 +18,8 @@ const models = {
     },
     savedArticles: async (req, res) => {
         try {
-            let articles = await Article.find({saved: true});
+            let articles = await Article.find({saved: true}).populate("note");
+            console.log(articles)
             res.render("index", {articles})
         } catch(e) {
             console.log(e)
@@ -40,21 +41,21 @@ const models = {
             articles.push(result)
         })
 
-        const merge = (a, b, p) => a.filter( aa => ! b.find ( bb => aa[p] === bb[p]) ).concat(b);
-        let articlesInDb = await Article.find();
-        let articlesToUpdate = merge(articles, articlesInDb, "saved");
+        // const merge = (a, b, p) => a.filter( aa => ! b.find ( bb => aa[p] === bb[p]) ).concat(b);
+        // let articlesInDb = await Article.find();
+        // let articlesToUpdate = merge(articles, articlesInDb, "saved");
         
-        let updatedArticles = await Article.updateMany(articlesToUpdate);
-        let savedArticles = await Article.find();
-        if (savedArticles.length === articlesToUpdate.length) {
-                res.redirect("/");
-            }
+        // let updatedArticles = await Article.updateMany(articlesToUpdate);
+        // let savedArticles = await Article.find();
+        // if (savedArticles.length === articlesToUpdate.length) {
+        //         res.redirect("/");
+        //     }
 
         // Use to set up DB after dropping collection
-            // let writtenArticles = await Article.insertMany(articles)
-            // if (writtenArticles.length === articles.length) {
-            //     res.redirect("/");
-            // }
+            let writtenArticles = await Article.insertMany(articles)
+            if (writtenArticles.length === articles.length) {
+                res.redirect("/");
+            }
     },
     saveArticle: async (req, res) => {
         let { _id } = req.body;
@@ -74,7 +75,7 @@ const models = {
         res.send(removedArticle);
     },
     addNote: async (req, res) => {
-        let _id = req.body._id;
+        let id = req.body._id;
         let noteId = req.body.noteId;
         let note = {};
         note.title = req.body.noteTitle;
@@ -82,7 +83,12 @@ const models = {
 
         if (noteId === "") {
             let newNote = await Note.create(note);
-            let articleWithNote = await Article.findByIdAndUpdate(_id, {$push: {note: newNote._id}}, {new: true})
+            // let articleWithNote = await Article.updateOne({_id: _id}, {$push: {note: newNote._id}})
+            let articleWithNote = await Article.update({_id: id}, {$push: {note: newNote._id}}, {new: true})
+
+            let savedNotes = await Article.findById(id).populate("note")
+
+            console.log(savedNotes)
             res.send(articleWithNote);
         } else {
             let updateNote = await Note.replaceOne({_id: noteId}, note, {upsert: true});
@@ -91,8 +97,10 @@ const models = {
         }
     },
     checkNote: async (req, res) => {
-        let _id = req.body._id;
+        let _id = req.body._id; 
+        // let savedNote;
         let savedNote = await Article.findById(_id).populate("note")
+        // console.log(savedNote)
         res.send(savedNote);
     }
 };
