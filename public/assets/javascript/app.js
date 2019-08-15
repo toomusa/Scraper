@@ -11,13 +11,11 @@ $(document).on("click", ".submitBtn", function(){
 
     if ($(this).text() === "Save Article") {
         $.post("/save", result, function(result){
-            console.log("Article Saved");
             $(`#note${result._id}`).attr("disabled", false);
             $(`#submit${result._id}`).text("Remove");
         })
     } else if ($(this).text() === "Remove") {
         $.post("/remove", result, function(result){
-            console.log("Article Removed");
             $(`#note${result._id}`).text("Add Note").attr("disabled", true);
             $(`#submit${result._id}`).text("Save Article");
         })
@@ -36,9 +34,7 @@ $(document).on("click", ".noteBtn", function(){
     let result = {title, summary, photo, link, _id};
     $("#note-modal").attr("data-id", `modal${_id}`)
 
-    console.log(result)
     $.post("/checknote", result, (savedNote) => {
-        console.log(savedNote)
         if (savedNote.note) {
             let noteTitle = (savedNote.note.title) ? savedNote.note.title : ""; 
             let noteBody = (savedNote.note.body) ? savedNote.note.body : "";
@@ -70,7 +66,6 @@ $("#note-modal").on("click", "#noteSubmit", () => {
     let result = {_id, title, summary, photo, link, noteId, noteTitle, noteBody};
     
     $.post("/addnote", result, function(articleWithNote) {
-        console.log("Added Note");
         let _id = articleWithNote._id;
         $(`#note${_id}`).text("View Note");
     })

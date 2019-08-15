@@ -41,24 +41,24 @@ const models = {
             articles.push(result)
         })
 
-        // const merge = (a, b, p) => a.filter( aa => ! b.find ( bb => aa[p] === bb[p]) ).concat(b);
-        // let articlesInDb = await Article.find();
-        // let articlesToUpdate = merge(articles, articlesInDb, "saved");
+        const merge = (a, b, p) => a.filter( aa => ! b.find ( bb => aa[p] === bb[p]) ).concat(b);
+        let articlesInDb = await Article.find();
+        let articlesToUpdate = merge(articles, articlesInDb, "saved");
         
-        // let updatedArticles = await Article.updateMany(articlesToUpdate);
-        // let savedArticles = await Article.find();
-        // console.log(savedArticles.length)
-        // console.log(articlesToUpdate.length)
-        // console.log(articles.length)
-        // if (savedArticles.length === articlesToUpdate.length) {
-        //         res.redirect("/");
-        //     }
-
-        // Use to set up DB after dropping collection
-            let writtenArticles = await Article.insertMany(articles)
-            if (writtenArticles.length === articles.length) {
+        let updatedArticles = await Article.updateMany(articlesToUpdate);
+        let savedArticles = await Article.find();
+        console.log(savedArticles.length)
+        console.log(articlesToUpdate.length)
+        console.log(articles.length)
+        if (savedArticles.length === articlesToUpdate.length) {
                 res.redirect("/");
             }
+
+        // Use to set up DB after dropping collection
+            // let writtenArticles = await Article.insertMany(articles)
+            // if (writtenArticles.length === articles.length) {
+            //     res.redirect("/");
+            // }
     },
     saveArticle: async (req, res) => {
         let { _id } = req.body;
