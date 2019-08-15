@@ -47,6 +47,9 @@ const models = {
         
         // let updatedArticles = await Article.updateMany(articlesToUpdate);
         // let savedArticles = await Article.find();
+        // console.log(savedArticles.length)
+        // console.log(articlesToUpdate.length)
+        // console.log(articles.length)
         // if (savedArticles.length === articlesToUpdate.length) {
         //         res.redirect("/");
         //     }
@@ -83,24 +86,19 @@ const models = {
 
         if (noteId === "") {
             let newNote = await Note.create(note);
-            // let articleWithNote = await Article.updateOne({_id: _id}, {$push: {note: newNote._id}})
-            let articleWithNote = await Article.update({_id: id}, {$push: {note: newNote._id}}, {new: true})
+            let articleWithNote = await Article.updateOne({_id: id}, {$push: {note: newNote._id}}, {new: true})
 
             let savedNotes = await Article.findById(id).populate("note")
-
-            console.log(savedNotes)
             res.send(articleWithNote);
         } else {
             let updateNote = await Note.replaceOne({_id: noteId}, note, {upsert: true});
-            let articleWithNote = await Article.findById(_id).populate("note")
+            let articleWithNote = await Article.findById(id).populate("note")
             res.send(articleWithNote);
         }
     },
     checkNote: async (req, res) => {
         let _id = req.body._id; 
-        // let savedNote;
         let savedNote = await Article.findById(_id).populate("note")
-        // console.log(savedNote)
         res.send(savedNote);
     }
 };

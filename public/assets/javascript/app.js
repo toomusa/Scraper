@@ -36,7 +36,9 @@ $(document).on("click", ".noteBtn", function(){
     let result = {title, summary, photo, link, _id};
     $("#note-modal").attr("data-id", `modal${_id}`)
 
+    console.log(result)
     $.post("/checknote", result, (savedNote) => {
+        console.log(savedNote)
         if (savedNote.note) {
             let noteTitle = (savedNote.note.title) ? savedNote.note.title : ""; 
             let noteBody = (savedNote.note.body) ? savedNote.note.body : "";
